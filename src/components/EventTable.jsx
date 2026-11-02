@@ -1,13 +1,9 @@
 import { Link } from 'react-router-dom';
 import { formatDate, formatDateRange } from '../lib/events.js';
 
-export default function EventTable({ title, events }) {
+export default function EventTable({ events }) {
   return (
     <section className="event-section">
-      <div className="section-heading">
-        <h2>{title}</h2>
-        <span>{events.length} events</span>
-      </div>
       <div className="table-wrap">
         <table className="event-table">
           <thead>
