@@ -32,7 +32,7 @@ function EventsPage({ type }) {
   return (
     <main className="page">
       <section className="hero">
-        <p className="eyebrow">Europe · from Frankfurt</p>
+        <p className="eyebrow">Europe</p>
         <h1>{meta.title}</h1>
         <p>{meta.description}</p>
         <div className="toolbar">
