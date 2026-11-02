@@ -25,17 +25,29 @@ h1 { font-size: clamp(40px, 7vw, 82px); letter-spacing: -.055em; line-height: .9
 .segmented, .calendar-controls { display: flex; gap: 6px; flex-wrap: wrap; }
 button, select { border: 1px solid #c9c7bd; background: #fff; border-radius: 10px; padding: 9px 12px; cursor: pointer; }
 button.active { background: #151515; color: #fff; border-color: #151515; }
-.history-button { margin-left: auto; }
+.history-button { margin-left: 0; }
+.toolbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-left: auto; }
+.event-count { color: #77756c; font-size: 14px; white-space: nowrap; }
 .event-section { margin: 40px 0 58px; }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 2px solid #151515; padding-bottom: 10px; }
 .section-heading h2 { font-size: 30px; margin: 0; letter-spacing: -.03em; }
 .section-heading span { color: #77756c; }
 .table-wrap { overflow-x: auto; }
-.event-table { width: 100%; border-collapse: collapse; min-width: 1120px; background: #fff; }
+.event-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1120px; background: #fff; }
 .event-table th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: #6f6d64; background: #eceae2; }
 .event-table th, .event-table td { padding: 14px 12px; border-bottom: 1px solid #e1dfd6; vertical-align: top; }
-.event-table tbody tr:hover { background: #fbfaf6; }
-.event-name { font-weight: 750; min-width: 170px; }
+.event-table tbody tr:hover td { background: #fbfaf6; }
+.event-table th:first-child,
+.event-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  box-shadow: 1px 0 0 #e1dfd6, 8px 0 14px -14px rgba(0,0,0,.45);
+}
+.event-table thead th:first-child { z-index: 5; background: #eceae2; }
+.event-table tbody td:first-child { background: #fff; }
+.event-table tbody tr:hover td:first-child { background: #fbfaf6; }
+.event-name { font-weight: 750; min-width: 190px; max-width: 230px; }
 .description-cell { min-width: 260px; color: #4e4d47; line-height: 1.4; }
 .event-table small { display: block; margin-top: 4px; color: #77756c; }
 .format-pill { display: inline-block; border: 1px solid #c9c7bd; border-radius: 999px; padding: 3px 8px; white-space: nowrap; }
@@ -74,6 +86,6 @@ button.active { background: #151515; color: #fff; border-color: #151515; }
   .site-header { padding: 12px 16px; }
   .page { padding: 22px 14px 60px; }
   .year-grid { grid-template-columns: 1fr; }
-  .history-button { margin-left: 0; }
+  .toolbar-right { margin-left: 0; }
   .day { min-height: 60px; }
 }
