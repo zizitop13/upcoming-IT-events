@@ -6,6 +6,7 @@ import {
   parseEventTable,
   sortEvents
 } from './events.js';
+import { categoryRoute, DEFAULT_ROUTE, NAV_ITEMS } from '../routes.js';
 
 const markdown = `# Hackathons 2027
 
@@ -61,5 +62,18 @@ describe('event visibility and ordering', () => {
       projectDeadline: '2027-04-19'
     }]);
     expect(markers.map((marker) => marker.kind)).toEqual(['deadline', 'project', 'event']);
+  });
+});
+
+
+describe('category routing', () => {
+  it('uses conferences as the default page and exposes separate category routes', () => {
+    expect(DEFAULT_ROUTE).toBe('/conferences');
+    expect(NAV_ITEMS.map((item) => item.to)).toEqual(['/conferences', '/hackathons', '/calendar']);
+  });
+
+  it('returns to the matching category from detail pages', () => {
+    expect(categoryRoute('hackathons')).toBe('/hackathons');
+    expect(categoryRoute('conferences')).toBe('/conferences');
   });
 });
