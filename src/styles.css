@@ -89,3 +89,18 @@ button.active { background: #151515; color: #fff; border-color: #151515; }
   .toolbar-right { margin-left: 0; }
   .day { min-height: 60px; }
 }
+
+.site-header { flex-wrap: wrap; gap: 12px; }
+.site-header nav { flex-wrap: wrap; align-items: center; }
+.github-link, .calendar-event { display: flex; gap: 6px; align-items: center; min-width: 0; }
+.calendar-event > a, .calendar-event > .marker { min-width: 0; flex: 1; }
+.star-button { padding: 2px 5px; border: 0; background: transparent; font-size: 22px; line-height: 1; color: #68665e; }
+.star-button.starred { color: #986000; }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, a:focus-visible { outline: 2px solid #245ccc; outline-offset: 3px; }
+.account-error { padding: 12px 24px; background: #ffe0df; }
+.my-events h1 { font-size: clamp(36px, 6vw, 64px); }
+.my-events .multi-year { columns: 2 260px; max-width: 850px; }
+
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand-logo { display: block; flex-shrink: 0; }

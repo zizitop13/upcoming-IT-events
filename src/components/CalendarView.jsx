@@ -1,3 +1,4 @@
+import { StarButton } from '../Account.jsx';
 import { Link } from 'react-router-dom';
 import { calendarMarkers } from '../lib/events.js';
 
@@ -12,7 +13,7 @@ function MarkerLink({ marker }) {
   return marker.event.detailRoute ? <Link to={marker.event.detailRoute}>{content}</Link> : content;
 }
 
-function CalendarAgenda({ markers }) {
+export function CalendarAgenda({ markers }) {
   const groups = new Map();
 
   for (const marker of markers) {
@@ -32,7 +33,7 @@ function CalendarAgenda({ markers }) {
           {items.map((marker, index) => (
             <div className="agenda-item" key={`${marker.date}-${marker.kind}-${index}`}>
               <time>{marker.date.slice(8, 10)}</time>
-              <MarkerLink marker={marker} />
+              <div className="calendar-event"><StarButton event={marker.event} /><MarkerLink marker={marker} /></div>
             </div>
           ))}
         </section>

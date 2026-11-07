@@ -1,3 +1,4 @@
+import { StarButton } from '../Account.jsx';
 import { Link } from 'react-router-dom';
 import { formatDate, formatDateRange } from '../lib/events.js';
 
@@ -22,6 +23,7 @@ export default function EventTable({ events }) {
             {events.map((event) => (
               <tr key={event.key}>
                 <td className="event-name">
+                  <StarButton event={event} />
                   {event.detailRoute ? <Link to={event.detailRoute}>{event.name}</Link> : event.name}
                 </td>
                 <td>{formatDateRange(event.starts, event.ends)}<small>{event.location}</small></td>

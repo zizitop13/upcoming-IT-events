@@ -26,3 +26,11 @@ npm run build
 - `AGENTS.md` — exact schema, duplicate rules, partitioning, and weekly update workflow.
 
 The home page hides events that ended more than two calendar days ago. Use **Show past events** to reveal the archive. The calendar page displays event dates and deadlines in a one-year calendar or a multi-year agenda.
+
+## GitHub sign-in and stars
+
+Copy `.env.example` to `.env.local` and fill the Firebase web app configuration. Set the same four `VITE_FIREBASE_*` values as Actions repository variables for Pages builds. These web configuration identifiers are public; never include a GitHub client secret.
+
+Enable GitHub in Firebase Authentication, add `zizitop13.github.io` as an authorized domain, and configure the OAuth callback shown by Firebase in the GitHub OAuth app. Backend rules and detailed provider setup live in `upcoming-IT-events-private/firebase/`. Deploy those rules before enabling the frontend.
+
+Stars sync across devices under `users/{uid}/starredEvents/{encodedEventKey}`. My events includes all starred catalogue events, including past events. Missing Firebase configuration leaves the catalogue available with sign-in disabled.
