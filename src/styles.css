@@ -118,3 +118,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid #245ccc; outline-offs
 .contribute-link:hover span, .contribute-link:focus-visible span { opacity: 1; }
 @media (hover: none) { .contribute-link { width: 146px; gap: 10px; } .contribute-link span { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .contribute-link, .contribute-link span { transition: none; } }
+
+.nav-toggle { display: none; }
+@media (max-width: 900px) {
+  .site-header { gap: 8px; padding: 10px 16px; }
+  .site-header .brand { font-size: 15px; gap: 8px; }
+  .brand-logo { width: 28px; height: 28px; }
+  .nav-toggle { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 56px; margin-left: auto; }
+  .site-header nav { display: none; flex-basis: 100%; width: 100%; padding-top: 8px; border-top: 1px solid #d9d7ce; max-height: 70dvh; overflow-y: auto; }
+  .site-header nav.is-open { display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
+  .site-header nav a, .site-header nav button { min-height: 44px; display: flex; align-items: center; padding: 10px 12px; border-radius: 10px; }
+}

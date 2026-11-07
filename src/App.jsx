@@ -1,5 +1,5 @@
 import About from './components/About.jsx';
-import { AccountProvider, AccountButton } from './Account.jsx';
+import { AccountProvider, AccountButton, useAccount } from './Account.jsx';
 import MyEvents from './components/MyEvents.jsx';
 import React from 'react';
 import { HashRouter, Link, Navigate, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
@@ -65,21 +65,31 @@ function DetailRoute() {
   return <EventDetail markdown={content.details.get(location.pathname)} backTo={backTo} backLabel={backLabel} />;
 }
 
-export default function App() {
-  return (
-    <AccountProvider><HashRouter>
-      <header className="site-header">
+function SiteHeader() {
+  const { user } = useAccount();
+  const [open, setOpen] = React.useState(false);
+  const toggleRef = React.useRef(null);
+  const location = useLocation();
+  React.useEffect(() => { setOpen(false); }, [location.pathname, user?.uid]);
+  return (      <header className="site-header" onKeyDown={event => { if (event.key === 'Escape') { setOpen(false); toggleRef.current?.focus(); } }}>
         <Link className="brand" to={DEFAULT_ROUTE}><img className="brand-logo" src={`${import.meta.env.BASE_URL}calendar.svg`} width="32" height="32" alt="" />Upcoming IT Events</Link>
-        <nav>
+        <button ref={toggleRef} className="nav-toggle" aria-expanded={open} aria-controls="site-navigation" onClick={() => setOpen(value => !value)}>{open ? 'Close' : 'Menu'}</button>
+        <nav id="site-navigation" aria-label="Main navigation" className={open ? 'is-open' : ''} onClick={event => { if (event.target.closest('a')) setOpen(false); }}>
           {NAV_ITEMS.map((item) => (
             <NavLink key={item.to} to={item.to}>{item.label}</NavLink>
           ))}
-        <NavLink to="/my-events">My events</NavLink>
+        {user && <NavLink to="/my-events">My events</NavLink>}
 
-          <NavLink to="/about">About & contributions</NavLink>
+          <NavLink to="/about">About</NavLink>
           <AccountButton />
         </nav>
-      </header>
+      </header>);
+}
+
+export default function App() {
+  return (
+    <AccountProvider><HashRouter>
+      <SiteHeader />
       <Routes>
         <Route path="/" element={<Navigate to={DEFAULT_ROUTE} replace />} />
         <Route path="/conferences" element={<EventsPage type="conferences" />} />
