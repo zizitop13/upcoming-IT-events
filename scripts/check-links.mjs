@@ -4,6 +4,10 @@ import { pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { parseEventTable, dedupeEvents, normalizeEventName } from '../src/lib/events.js';
 
+export function markdownProse(text) {
+  return text.replace(/^```[^\n]*\n[\s\S]*?^```\s*$/gm, '').replace(/^~~~[^\n]*\n[\s\S]*?^~~~\s*$/gm, '').replace(/(`+)[\s\S]*?\1/g, '');
+}
+export function unverifiedStatus(status) { return [401, 403, 429].includes(status); }
 export function urls(text) { return [...new Set(text.match(/https?:\/\/[^\s<>"')|]+/g) || [])].map(url => url.replace(/[.,;]+$/, '')); }
 export function matchesEvent(html, name) {
   const plain = normalizeEventName(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '').replace(/<[^>]+>/g, ' '));
@@ -23,7 +27,8 @@ async function files(dir) {
 export async function check() {
   const all = await files('.'); const events = []; const links = new Map(); const failures = [];
   for (const file of all) {
-    const text = await readFile(file, 'utf8');
+    const raw = await readFile(file, 'utf8');
+    const text = file.endsWith('.md') ? markdownProse(raw) : raw;
     for (const url of urls(text)) { if (!links.has(url)) links.set(url, new Set()); links.get(url).add(file); }
     const category = file.match(/^content\/(conferences|hackathons)\/\d{4}\.md$/);
     if (category) events.push(...parseEventTable(text, category[1], file));
@@ -46,6 +51,13 @@ export async function check() {
     if (cache[key] && process.env.RECHECK !== 'true') { skipped++; continue; }
     try {
       const response = await fetch(url, { signal: AbortSignal.timeout(20000), headers: { 'User-Agent': 'UpcomingITEvents-LinkChecker/1.0' } });
+      if (unverifiedStatus(response.status)) {
+        await response.body?.cancel();
+        const reason = `HTTP ${response.status}: automated access denied or rate-limited; manual verification required`;
+        report.push({url, status:'unverified', reason, sources:[...sources]});
+        console.warn(`::warning::${url}: ${reason}`);
+        continue; // Never cache an unverified destination.
+      }
       if (!response.ok) throw Error(`HTTP ${response.status}`);
       if (names.length) {
         const html = await response.text();
