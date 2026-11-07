@@ -101,3 +101,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #245ccc; outline-offs
 .account-error { padding: 12px 24px; background: #ffe0df; }
 .my-events h1 { font-size: clamp(36px, 6vw, 64px); }
 .my-events .multi-year { columns: 2 260px; max-width: 850px; }
+
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand-logo { display: block; flex-shrink: 0; }

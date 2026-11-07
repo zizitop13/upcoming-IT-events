@@ -68,7 +68,7 @@ export default function App() {
   return (
     <AccountProvider><HashRouter>
       <header className="site-header">
-        <Link className="brand" to={DEFAULT_ROUTE}>Upcoming IT Events</Link>
+        <Link className="brand" to={DEFAULT_ROUTE}><img className="brand-logo" src={`${import.meta.env.BASE_URL}calendar.svg`} width="32" height="32" alt="" />Upcoming IT Events</Link>
         <nav>
           {NAV_ITEMS.map((item) => (
             <NavLink key={item.to} to={item.to}>{item.label}</NavLink>
