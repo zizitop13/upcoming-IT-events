@@ -1,15 +1,25 @@
+import { useEffect, useState } from 'react';
 import { useAccount, AccountButton } from '../Account.jsx';
 import { selectStarredEvents } from '../lib/stars.js';
 import { calendarMarkers, sortEvents } from '../lib/events.js';
 import { CalendarAgenda } from './CalendarView.jsx';
 import EventTable from './EventTable.jsx';
+
+// Keep the current page stable while stars are removed; reset on navigation/account change.
+function SavedEvents({ events, stars }) {
+  const [seenKeys, setSeenKeys] = useState(() => new Set(stars));
+  useEffect(() => { setSeenKeys(previous => new Set([...previous, ...stars])); }, [stars]);
+  const selected = sortEvents(selectStarredEvents(events, new Set([...seenKeys, ...stars])), 'event');
+  if (!selected.length) return <p>Star events in the lists or calendar to see them here.</p>;
+  return <>
+    <p>Unstarred events stay visible until you leave this page, so you can add them back.</p>
+    <h2>Your calendar</h2><CalendarAgenda markers={calendarMarkers(selected)} />
+    <h2>Your events ({selected.length} shown · {selectStarredEvents(events, stars).length} starred)</h2><EventTable events={selected} />
+  </>;
+}
 export default function MyEvents({ events }) {
   const { user, ready, starsReady, stars, configured } = useAccount();
-  const selected = sortEvents(selectStarredEvents(events, stars), 'event');
   return <main className="page my-events"><h1>My starred events</h1>
-    {!ready ? <p>Loading account…</p> : !user ? <><p>{configured ? 'Sign in to save events and see your personal calendar.' : 'Sign-in is being configured. Please check back soon.'}</p><AccountButton /></> : !starsReady ? <p>Loading your events…</p> : selected.length === 0 ? <p>Star events in the lists or calendar to see them here.</p> : <>
-      <h2>Your calendar</h2><CalendarAgenda markers={calendarMarkers(selected)} />
-      <h2>Your events ({selected.length})</h2><EventTable events={selected} />
-    </>}
+    {!ready ? <p>Loading account…</p> : !user ? <><p>{configured ? 'Sign in to save events and see your personal calendar.' : 'Sign-in is being configured. Please check back soon.'}</p><AccountButton /></> : !starsReady ? <p>Loading your events…</p> : <SavedEvents key={user.uid} events={events} stars={stars} />}
   </main>;
 }

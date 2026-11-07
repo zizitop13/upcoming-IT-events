@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 64 64" fill="none">
+  <title>Abstract calendar</title>
+  <rect width="64" height="64" rx="12" fill="#fff"/>
+  <path d="M20 8v12M44 8v12M53 30V20a6 6 0 0 0-6-6H17a6 6 0 0 0-6 6v28a6 6 0 0 0 6 6h18" stroke="#000" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M11 28h42" stroke="#000" stroke-width="6"/>
+  <rect x="21" y="37" width="8" height="8" rx="2" fill="#000"/>
+  <path d="m42 51 6 6 11-14" stroke="#000" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
