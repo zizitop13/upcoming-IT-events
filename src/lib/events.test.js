@@ -77,3 +77,15 @@ describe('category routing', () => {
     expect(categoryRoute('conferences')).toBe('/conferences');
   });
 });
+
+// Stars use canonical catalogue identity and retain archived events.
+import { starDocumentId, selectStarredEvents } from './stars.js';
+it('stars select across categories without hiding past events', () => {
+  const events = [{ key: 'old::2020', type: 'conferences' }, { key: 'new::2027', type: 'hackathons' }];
+  expect(selectStarredEvents(events, new Set(['old::2020', 'new::2027', 'removed']))).toEqual(events);
+  expect(selectStarredEvents(events, new Set())).toEqual([]);
+});
+it('star document IDs safely encode canonical keys', () => {
+  expect(starDocumentId('test name::2027')).toBe('test%20name%3A%3A2027');
+  expect(starDocumentId('a/b')).not.toContain('/');
+});
