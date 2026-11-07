@@ -1,0 +1,43 @@
+name: Check catalogue links and duplicates
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      recheck:
+        description: Recheck previously successful links
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/cache/restore@v4
+        with:
+          path: .cache/checked-links.json
+          key: checked-links-v2-${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            checked-links-v2-${{ github.ref }}-
+            checked-links-v2-refs/heads/main-
+      - name: Check links and duplicate event keys
+        env:
+          RECHECK: ${{ inputs.recheck || 'false' }}
+        run: node scripts/check-links.mjs
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .cache/checked-links.json
+          key: checked-links-v2-${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: link-check-report
+          path: link-check-report.json

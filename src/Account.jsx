@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, GithubAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
-import { starDocumentId } from './lib/stars.js';
+import { getFirestore, collection, onSnapshot, doc, runTransaction, serverTimestamp } from 'firebase/firestore';
+import { applyStarClick, starDocumentId } from './lib/stars.js';
 
 const config = { apiKey: import.meta.env.VITE_FIREBASE_API_KEY, authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN, projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID, appId: import.meta.env.VITE_FIREBASE_APP_ID };
 const configured = Object.values(config).every(Boolean);
@@ -18,6 +18,7 @@ export function AccountProvider({ children }) {
   const [ready, setReady] = useState(!configured);
   const [starsReady, setStarsReady] = useState(false);
   const [pending, setPending] = useState(new Set());
+  const pendingKeys = useRef(new Set());
   const [error, setError] = useState('');
   useEffect(() => auth ? onAuthStateChanged(auth, value => { setUser(value); setStars(new Set()); setStarsReady(false); setReady(true); setError(''); }) : undefined, []);
   useEffect(() => {
@@ -29,20 +30,27 @@ export function AccountProvider({ children }) {
   async function login() {
     if (!auth) return;
     setError('');
-    try { await signInWithPopup(auth, new GithubAuthProvider()); }
+    try { return (await signInWithPopup(auth, new GithubAuthProvider())).user; }
     catch (e) { if (e.code !== 'auth/popup-closed-by-user') setError('GitHub sign-in failed. Please try again.'); }
   }
   async function logout() { try { await signOut(auth); } catch { setError('Could not sign out. Please try again.'); } }
   async function toggle(event) {
-    if (!user) { await login(); return; }
-    if (!starsReady || pending.has(event.key)) return;
-    setPending(old => new Set(old).add(event.key)); setError('');
+    if (!configured || (user && !starsReady) || pendingKeys.current.has(event.key)) return;
+    pendingKeys.current.add(event.key);
+    setPending(new Set(pendingKeys.current)); setError('');
     try {
-      const ref = doc(db, 'users', user.uid, 'starredEvents', starDocumentId(event.key));
-      if (stars.has(event.key)) await deleteDoc(ref);
-      else await setDoc(ref, { eventKey: event.key, createdAt: serverTimestamp() });
+      await applyStarClick({ user, login, starred: stars.has(event.key), event,
+        write: async (uid, item, remove) => {
+          const ref = doc(db, 'users', uid, 'starredEvents', starDocumentId(item.key));
+          await runTransaction(db, async transaction => {
+            const existing = await transaction.get(ref);
+            if (remove) transaction.delete(ref);
+            else if (!existing.exists()) transaction.set(ref, { eventKey: item.key, createdAt: serverTimestamp() });
+          });
+        }
+      });
     } catch { setError('Could not save your star. Please try again.'); }
-    finally { setPending(old => { const next = new Set(old); next.delete(event.key); return next; }); }
+    finally { pendingKeys.current.delete(event.key); setPending(new Set(pendingKeys.current)); }
   }
   return <Account.Provider value={{ user, stars, ready, starsReady, pending, configured, login, logout, toggle }}>
     {error && <div className="account-error" role="alert">{error}</div>}{children}

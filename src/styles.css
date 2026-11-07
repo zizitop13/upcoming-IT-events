@@ -104,3 +104,17 @@ button:focus-visible, a:focus-visible { outline: 2px solid #245ccc; outline-offs
 
 .brand { display: inline-flex; align-items: center; gap: 10px; }
 .brand-logo { display: block; flex-shrink: 0; }
+
+.contribute-link {
+  position: fixed; right: max(20px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 30; display: flex; align-items: center; justify-content: flex-start; gap: 0;
+  width: 48px; height: 48px; padding: 13px; overflow: hidden; border: 1px solid #d9d7ce;
+  border-radius: 14px; background: #fff; color: #151515; text-decoration: none;
+  box-shadow: 0 4px 18px #00000018; transition: width 220ms ease, gap 220ms ease;
+}
+.contribute-link svg { flex: 0 0 20px; }
+.contribute-link span { opacity: 0; white-space: nowrap; transition: opacity 180ms ease; }
+.contribute-link:hover, .contribute-link:focus-visible { width: 146px; gap: 10px; }
+.contribute-link:hover span, .contribute-link:focus-visible span { opacity: 1; }
+@media (hover: none) { .contribute-link { width: 146px; gap: 10px; } .contribute-link span { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .contribute-link, .contribute-link span { transition: none; } }
