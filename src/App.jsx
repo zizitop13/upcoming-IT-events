@@ -1,3 +1,4 @@
+import About from './components/About.jsx';
 import { AccountProvider, AccountButton } from './Account.jsx';
 import MyEvents from './components/MyEvents.jsx';
 import React from 'react';
@@ -75,6 +76,7 @@ export default function App() {
           ))}
         <NavLink to="/my-events">My events</NavLink>
 
+          <NavLink to="/about">About & contributions</NavLink>
           <AccountButton />
         </nav>
       </header>
@@ -83,6 +85,7 @@ export default function App() {
         <Route path="/conferences" element={<EventsPage type="conferences" />} />
         <Route path="/hackathons" element={<EventsPage type="hackathons" />} />
         <Route path="/my-events" element={<MyEvents events={content.events} />} />
+        <Route path="/about" element={<About />} />
         <Route path="/calendar" element={<CalendarView events={content.events} />} />
         <Route path="/event/:type/:year/:slug" element={<DetailRoute />} />
       </Routes>
