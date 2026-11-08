@@ -1,59 +1,34 @@
-name: Deploy GitHub Pages
-
+name: Retire GitHub Pages
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: pages
-  cancel-in-progress: true
-
+  cancel-in-progress: false
 jobs:
-  build:
+  retire:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - uses: actions/configure-pages@v5
-      - run: npm install --no-audit --no-fund
-      - run: npm test
-      - run: npm run build
-        env:
-          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-      - name: Build Firebase Hosting version
-        run: npm run build -- --base=/ --outDir dist-firebase
-        env:
-          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: firebase-hosting-site
-          path: dist-firebase
-          retention-days: 30
-
-  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - uses: actions/configure-pages@v5
+      - name: Replace the old app with the Firebase migration redirect
+        run: |
+          mkdir -p "$RUNNER_TEMP/pages-redirect"
+          cat > "$RUNNER_TEMP/pages-redirect/index.html" <<'HTML'
+          <!doctype html>
+          <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=https://upcoming-it-events.web.app/"><title>Upcoming IT Events has moved</title></head><body><p>Upcoming IT Events is now hosted on <a href="https://upcoming-it-events.web.app/">Firebase Hosting</a>.</p></body></html>
+          HTML
+          cp "$RUNNER_TEMP/pages-redirect/index.html" "$RUNNER_TEMP/pages-redirect/404.html"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/pages-redirect
+      - name: Retire the old Pages app
         id: deployment
         uses: actions/deploy-pages@v4
