@@ -1,44 +1,31 @@
 # Upcoming IT Events
 
-A Markdown-first catalogue of software-engineering conferences and hackathons that are practical to attend from Germany.
+Discover software-engineering conferences, hackathons and coding competitions in Europe.
 
-The site is rendered with React and deployed to GitHub Pages. Event data stays independent from the rendering engine: the source of truth is plain Markdown under `content/`.
+**[Visit the website](https://zizitop13.github.io/upcoming-IT-events/)**
 
-## Local development
+## What you can do
 
-```bash
-npm install
-npm test
-npm run dev
-```
+- Browse conferences and hackathons in separate lists.
+- Compare dates, deadlines, locations, formats and costs.
+- See event dates and submission deadlines in the calendar.
+- Sign in with GitHub to star events and sync them across devices.
+- View saved events and a personal calendar on **My events**.
+- Reveal past events to explore the archive.
 
-Production build:
+## How the catalogue works
 
-```bash
-npm run build
-```
+Events are collected through AI-assisted searches of organizer websites.
+Dates and descriptions can change, so check the official event page before registering.
+Automated checks flag broken links, uncertain destinations and duplicate entries.
 
-## Content
+The website uses React, Firebase Authentication and Cloud Firestore.
+Event information lives in plain Markdown files in the public repository.
 
-- `content/conferences/<year>.md` — yearly conference tables.
-- `content/hackathons/<year>.md` — yearly hackathon tables.
-- `content/details/<type>/<year>/<slug>.md` — optional Markdown detail pages.
-- `AGENTS.md` — exact schema, duplicate rules, partitioning, and weekly update workflow.
+## Contribute
 
-The home page hides events that ended more than two calendar days ago. Use **Show past events** to reveal the archive. The calendar page displays event dates and deadlines in a one-year calendar or a multi-year agenda.
+Add an event, improve a description or correct a date or link by editing the
+[content directory](https://github.com/zizitop13/upcoming-IT-events/tree/main/content)
+and opening a pull request.
 
-## GitHub sign-in and stars
-
-Copy `.env.example` to `.env.local` and fill the Firebase web app configuration. Set the same four `VITE_FIREBASE_*` values as Actions repository variables for Pages builds. These web configuration identifiers are public; never include a GitHub client secret.
-
-Enable GitHub in Firebase Authentication, add `zizitop13.github.io` as an authorized domain, and configure the OAuth callback shown by Firebase in the GitHub OAuth app. Backend rules and detailed provider setup live in `upcoming-IT-events-private/firebase/`. Deploy those rules before enabling the frontend.
-
-Stars sync across devices under `users/{uid}/starredEvents/{encodedEventKey}`. My events includes all starred catalogue events, including past events. Missing Firebase configuration leaves the catalogue available with sign-in disabled.
-
-## Catalogue validation
-
-`node scripts/check-links.mjs` scans repository text files (excluding dependencies, build output, generated reports and synthetic tests), validates relative Markdown file links, checks external HTTP destinations, and always rejects duplicate canonical event keys across all yearly tables. Official website pages must contain the meaningful words in the event name. This is a heuristic, not AI verification: JavaScript-only pages, bot protection, changed titles, or unavailable sites fail for manual review. URL fragments are not validated.
-
-The Check catalogue links and duplicates workflow runs on PRs and main pushes. Successful URL + event-name checks persist in GitHub Actions cache and are skipped on later runs. Failed checks are never cached. Cache eviction causes a fresh check; this cache is not a permanent audit store. Run the workflow manually with `recheck` enabled to refresh all links. Download the JSON report artifact for failed URLs, source files and redirect destinations. Template URLs are explicitly skipped.
-
-Markdown inline/fenced code examples are excluded from link extraction. HTTP 401, 403 and 429 responses are reported as unverified warnings, never cached as successful, and retried next run. They require manual verification; other HTTP errors, missing local files, event-identity mismatches and duplicates still fail the job.
+See [AGENTS.md](AGENTS.md) for the table format and contribution guidelines.
