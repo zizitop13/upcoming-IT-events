@@ -136,10 +136,23 @@ button:focus-visible, a:focus-visible { outline: 2px solid #245ccc; outline-offs
 @media (max-width: 900px) {
   .header-left { gap: 8px; flex: 1; }
   .my-events-shortcut { padding: 4px; }
-  .my-events-shortcut span { display: none; }
   .site-header .brand { min-width: 0; }
   .contribute-link { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(16px); transition: opacity 220ms ease, transform 220ms ease, visibility 220ms, width 220ms ease, gap 220ms ease; }
   .contribute-link.is-scrolled { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
 }
 @media (max-width: 380px) { .site-header .brand { font-size: 13px; gap: 5px; } .header-left { gap: 4px; } }
 @media (prefers-reduced-motion: reduce) { .contribute-link { transition: none; transform: none; } }
+
+.header-actions { display: flex; align-items: center; gap: 8px; order: 2; }
+.my-events-shortcut { white-space: nowrap; }
+.my-events-shortcut svg { flex-shrink: 0; }
+.site-header nav { order: 1; margin-left: auto; }
+@media (max-width: 900px) {
+  .header-actions { order: 0; margin-left: auto; }
+  .site-header nav { order: 3; margin-left: 0; }
+  .header-actions .nav-toggle { margin-left: 0; }
+  .my-events-shortcut { font-size: 14px; }
+}
+@media (max-width: 600px) {
+  .header-left { flex-basis: 100%; }
+}
