@@ -18,8 +18,16 @@ function SavedEvents({ events, stars }) {
   </>;
 }
 export default function MyEvents({ events }) {
-  const { user, ready, starsReady, stars, configured } = useAccount();
+  const { user, ready, starsReady, stars, configured, deleteAccount } = useAccount();
+  const [deleting, setDeleting] = useState(false);
+  async function confirmDeleteAccount() {
+    const confirmed = window.confirm('Delete your account and all your starred events? This cannot be undone.');
+    if (!confirmed) return;
+    setDeleting(true);
+    try { await deleteAccount(); } catch { /* The account provider displays the failure. */ }
+    finally { setDeleting(false); }
+  }
   return <main className="page my-events"><h1>My starred events</h1>
-    {!ready ? <p>Loading account…</p> : !user ? <><p>{configured ? 'Sign in to save events and see your personal calendar.' : 'Sign-in is being configured. Please check back soon.'}</p><AccountButton /></> : !starsReady ? <p>Loading your events…</p> : <SavedEvents key={user.uid} events={events} stars={stars} />}
+    {!ready ? <p>Loading account…</p> : !user ? <><p>{configured ? 'Sign in to save events and see your personal calendar.' : 'Sign-in is being configured. Please check back soon.'}</p><AccountButton /></> : !starsReady ? <p>Loading your events…</p> : <><SavedEvents key={user.uid} events={events} stars={stars} /><section className="delete-account"><h2>Account</h2><p>Deleting your account also removes your saved events.</p><button className="danger-button" disabled={deleting} onClick={confirmDeleteAccount}>{deleting ? 'Deleting account…' : 'Delete account'}</button></section></>}
   </main>;
 }

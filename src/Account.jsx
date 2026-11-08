@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, GithubAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, runTransaction, serverTimestamp } from 'firebase/firestore';
+import { getAuth, GithubAuthProvider, onAuthStateChanged, signInWithPopup, signOut, reauthenticateWithPopup, deleteUser } from 'firebase/auth';
+import { getFirestore, collection, onSnapshot, doc, runTransaction, serverTimestamp, getDocs, writeBatch } from 'firebase/firestore';
 import { applyStarClick, starDocumentId } from './lib/stars.js';
 
 const config = { apiKey: import.meta.env.VITE_FIREBASE_API_KEY, authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN, projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID, appId: import.meta.env.VITE_FIREBASE_APP_ID };
@@ -34,6 +34,26 @@ export function AccountProvider({ children }) {
     catch (e) { if (e.code !== 'auth/popup-closed-by-user') setError('GitHub sign-in failed. Please try again.'); }
   }
   async function logout() { try { await signOut(auth); } catch { setError('Could not sign out. Please try again.'); } }
+  async function deleteAccount() {
+    if (!auth?.currentUser || !db) return;
+    setError('');
+    try {
+      const currentUser = auth.currentUser;
+      await reauthenticateWithPopup(currentUser, new GithubAuthProvider());
+      const savedEvents = await getDocs(collection(db, 'users', currentUser.uid, 'starredEvents'));
+      for (let offset = 0; offset < savedEvents.docs.length; offset += 450) {
+        const batch = writeBatch(db);
+        savedEvents.docs.slice(offset, offset + 450).forEach(item => batch.delete(item.ref));
+        await batch.commit();
+      }
+      await deleteUser(currentUser);
+    } catch (e) {
+      setError(e.code === 'auth/popup-closed-by-user'
+        ? 'Account deletion was cancelled during GitHub verification.'
+        : 'Could not delete your account. Please sign in again and retry.');
+      throw e;
+    }
+  }
   async function toggle(event) {
     if (!configured || (user && !starsReady) || pendingKeys.current.has(event.key)) return;
     pendingKeys.current.add(event.key);
@@ -52,13 +72,13 @@ export function AccountProvider({ children }) {
     } catch { setError('Could not save your star. Please try again.'); }
     finally { pendingKeys.current.delete(event.key); setPending(new Set(pendingKeys.current)); }
   }
-  return <Account.Provider value={{ user, stars, ready, starsReady, pending, configured, login, logout, toggle }}>
+  return <Account.Provider value={{ user, stars, ready, starsReady, pending, configured, login, logout, deleteAccount, toggle }}>
     {error && <div className="account-error" role="alert">{error}</div>}{children}
   </Account.Provider>;
 }
-export function AccountButton() {
+export function AccountButton({ compact = false }) {
   const a = useAccount();
-  return <button disabled={!a.configured || !a.ready} title={!a.configured ? 'Sign-in is being configured' : undefined} onClick={a.user ? a.logout : a.login}>{a.user ? 'Sign out' : 'Sign in with GitHub'}</button>;
+  return <button className={`account-button ${compact ? 'account-button-compact' : ''}`} disabled={!a.configured || !a.ready} title={!a.configured ? 'Sign-in is being configured' : a.user ? 'Sign out' : 'Sign in with GitHub'} aria-label={a.user ? 'Sign out' : 'Sign in with GitHub'} onClick={a.user ? a.logout : a.login}>{a.user ? 'Sign out' : compact ? <><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5M15 12H3"/></svg><span>Sign in with GitHub</span></> : 'Sign in with GitHub'}</button>;
 }
 export function StarButton({ event }) {
   const a = useAccount(); const starred = a.stars.has(event.key);

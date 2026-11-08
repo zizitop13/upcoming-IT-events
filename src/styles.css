@@ -157,4 +157,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid #245ccc; outline-offs
 @media (max-width: 900px) {
   .my-events-shortcut span { display: none; }
   .header-actions { flex-shrink: 0; }
+  .account-button-compact { width: 44px; min-width: 44px; height: 44px; padding: 9px; display: inline-flex; align-items: center; justify-content: center; }
+  .account-button-compact span { display: none; }
 }
+
+.delete-account { max-width: 520px; margin-top: 48px; padding-top: 20px; border-top: 1px solid #d9d7ce; }
+.delete-account h2 { margin-bottom: 8px; }
+.delete-account p { color: #56554f; }
+.danger-button { color: #a11b16; border-color: #d7aaa7; }
+.danger-button:hover:not(:disabled) { background: #fff0ef; }
