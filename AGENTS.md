@@ -2,18 +2,16 @@
 
 ## Purpose
 
-This repository is a Markdown-first catalogue of upcoming software-engineering conferences and hackathons that are useful to someone based in Frankfurt, Germany. React is only the rendering engine. Event content must remain portable plain Markdown so the frontend can be replaced without rewriting the catalogue.
+This repository is a Markdown-first catalogue of upcoming software-engineering conferences and hackathons that are useful to someone based in Frankfurt, Germany. This repository contains only Markdown content, contribution documentation and validation workflows. Website JavaScript, builds and Firebase deployment live in the private repository. Event content must remain portable plain Markdown.
 
 ## Repository map
 
 - `content/conferences/<year>.md` — conference and developer-event rows for one event year.
 - `content/hackathons/<year>.md` — hackathon, coding-competition, CTF, engineering-challenge and build-event rows for one event year.
 - `content/details/<type>/<year>/<slug>.md` — optional long-form event page. Pure Markdown only; no YAML frontmatter, JSX, HTML metadata or React-specific syntax.
-- `src/` — React renderer and JavaScript-only content parsing/filtering/calendar logic.
-- `src/lib/events.js` — the canonical parser, duplicate-key rule, date filtering and sorting logic.
-- `src/lib/events.test.js` — tests for JavaScript behavior only. Do not test the real event content.
-- `.github/workflows/pages.yml` — GitHub Pages build/test/deploy workflow.
-- `README.md` — human-facing project overview.
+- `.github/workflows/check-links.yml` — self-contained Markdown/event/link validation for pull requests and main.
+- `CONTRIBUTING.md` — human and AI contribution instructions.
+- `README.md` — project overview and live Firebase website link.
 
 ## Content partitioning
 
@@ -58,14 +56,14 @@ The repository-wide event key is:
 
 `normalize(Name) + event year from Starts`
 
-Normalization is case-insensitive and ignores punctuation/repeated whitespace, matching `normalizeEventName()` in `src/lib/events.js`.
+Normalization is case-insensitive and ignores punctuation/repeated whitespace, using NFKD normalization, lower-case ASCII letters/digits, and collapsed whitespace.
 
 Examples that are duplicates:
 
 - `KotlinConf 2027` + `2027`
 - `KotlinConf 2027!` + `2027`
 
-Before adding an event, search **all** conference and hackathon yearly files for the same name/year. An event must appear in exactly one category. If the key already exists, update the existing row instead of appending another row. The React runtime also deduplicates defensively and displays a warning when duplicate keys are detected, but agents must prevent duplicates at source.
+Before adding an event, search **all** conference and hackathon yearly files for the same name/year. An event must appear in exactly one category. If the key already exists, update the existing row instead of appending another row. The validation workflow rejects duplicate keys across all conference and hackathon files. Prevent duplicates at source.
 
 ## Sorting and visibility
 
@@ -99,9 +97,9 @@ For an automated weekly update:
 4. Add a new row only when the event matches the repository scope. Otherwise update the existing row in place.
 5. Create or update an optional detail page only when it adds real value.
 6. Do not delete old events merely because they passed; the UI handles visibility and history.
-7. For a normal weekly content refresh, modify only `content/**`. Do not touch React, workflow, package files, or tests unless the schema/rendering contract itself must change.
+7. For a normal weekly content refresh, modify only `content/**`. Do not add application code, package files, scripts or build/deploy workflows. Changes to the schema or validation workflow require explicit maintainer approval.
 8. Keep conference updates in conference files and hackathon/competition updates in hackathon files.
-9. Commit with a concise message describing the content refresh.
+9. Commit with a concise message describing the content refresh and open a pull request against `main`. Human and AI contributions follow the same validation. Do not merge or push directly to main unless the user explicitly requests it.
 
 ## Scope and quality bar
 
@@ -109,18 +107,12 @@ Prioritize Germany and nearby Europe: Netherlands, Belgium, Luxembourg, France, 
 
 Prefer English-language or clearly English-accessible events, professional eligibility, low/free cost, strong engineering content, reputable sponsors, public demos/leaderboards, CFP opportunities, recruiting/networking value, or meaningful prizes. Do not claim a hiring fast-track unless an official source says so; describe indirect networking as indirect.
 
-## JavaScript and tests
+## Validation and publication
 
-Tests cover JavaScript logic, not event content.
-
-When changing parsing, filtering, sorting, duplicate detection, routing, or calendar generation:
-
-- update/add synthetic tests in `src/lib/events.test.js`;
-- never make tests assert that a real conference or hackathon row exists;
-- run `npm test` and `npm run build`.
-
-Routine Markdown content updates do not require new tests.
-
-## Deployment
-
-GitHub Pages is deployed from GitHub Actions. `main` is the publishing branch. The Pages workflow runs JavaScript tests before building and deploying the React site.
+- Every pull request and every push to main runs `.github/workflows/check-links.yml`.
+- It checks exact table columns, real ISO dates, start-year partitions, enum values, internal Markdown links, duplicate keys, official URL reachability and event identity.
+- Successful URL checks are cached; duplicates and event structure are checked every run. Blocked/rate-limited sites are reported for manual verification and are never cached as passed. Other link failures and identity mismatches fail the check.
+- Review the `link-check-report` artifact for failed/unverified URLs, event names and short descriptions.
+- The private website deployment watches public main, waits for validation of that exact revision, then copies only `content/**/*.md` and rebuilds Firebase Hosting. GitHub schedules may be delayed.
+- Do not add JavaScript, HTML, npm dependencies, Firebase configuration, symlinks or GitHub Pages workflows to this repository.
+- AI contributors must verify factual claims against organizer sources, preserve Markdown portability, and use the same pull-request process as humans.

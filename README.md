@@ -1,31 +1,20 @@
 # Upcoming IT Events
 
-Discover software-engineering conferences, hackathons and coding competitions in Europe.
+A community-maintained Markdown catalogue of software engineering conferences, hackathons and competitions in Europe.
 
-**[Visit the website](https://zizitop13.github.io/upcoming-IT-events/)**
-
-## What you can do
-
-- Browse conferences and hackathons in separate lists.
-- Compare dates, deadlines, locations, formats and costs.
-- See event dates and submission deadlines in the calendar.
-- Sign in with GitHub to star events and sync them across devices.
-- View saved events and a personal calendar on **My events**.
-- Reveal past events to explore the archive.
-
-## How the catalogue works
-
-Events are collected through AI-assisted searches of organizer websites.
-Dates and descriptions can change, so check the official event page before registering.
-Automated checks flag broken links, uncertain destinations and duplicate entries.
-
-The website uses React, Firebase Authentication and Cloud Firestore.
-Event information lives in plain Markdown files in the public repository.
+**Website:** https://upcoming-it-events.web.app/
 
 ## Contribute
 
-Add an event, improve a description or correct a date or link by editing the
-[content directory](https://github.com/zizitop13/upcoming-IT-events/tree/main/content)
-and opening a pull request.
+Human and AI contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md), edit the [conference](content/conferences) or [hackathon](content/hackathons) files, and open a pull request against `main`.
 
-See [AGENTS.md](AGENTS.md) for the table format and contribution guidelines.
+Keep one yearly table per category. Optional longer descriptions live in [content/details](content/details). Verify dates, deadlines and prices against official organizer sources, and check existing files for duplicate name/year keys.
+
+## Validation
+
+Every pull request and main update runs the [event and link validator](.github/workflows/check-links.yml). It checks the Markdown schema, dates, duplicate events, local links and official websites. Successful link checks are cached; uncertain destinations are reported for manual review.
+
+This repository contains Markdown and validation workflows only. The application, its tests, build dependencies and Firebase Hosting deployment are maintained privately. Validated changes on public `main` are picked up automatically by the private deployment. GitHub Pages is no longer used.
+
+Event discovery is AI-assisted and may miss changes. Always check the official event page before applying, registering, paying or travelling.
+
