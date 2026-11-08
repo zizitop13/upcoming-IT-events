@@ -1,4 +1,5 @@
 import About from './components/About.jsx';
+import Impressum from './components/Impressum.jsx';
 import { AccountProvider, AccountButton, useAccount } from './Account.jsx';
 import MyEvents from './components/MyEvents.jsx';
 import React from 'react';
@@ -86,9 +87,18 @@ function SiteHeader() {
           ))}
 
 
-          <NavLink to="/about">About</NavLink>
         </nav>
       </header>);
+}
+
+function SiteFooter() {
+  return <footer className="site-footer">
+    <nav aria-label="Footer navigation">
+      <NavLink to="/about">About</NavLink>
+      <NavLink to="/impressum">Impressum</NavLink>
+    </nav>
+    <a href="mailto:zinyakovmv@gmail.com">zinyakovmv@gmail.com</a>
+  </footer>;
 }
 
 function ContributeLink() {
@@ -105,6 +115,7 @@ function ContributeLink() {
 export default function App() {
   return (
     <AccountProvider><HashRouter>
+      <div className="site-layout">
       <SiteHeader />
       <Routes>
         <Route path="/" element={<Navigate to={DEFAULT_ROUTE} replace />} />
@@ -112,10 +123,13 @@ export default function App() {
         <Route path="/hackathons" element={<EventsPage type="hackathons" />} />
         <Route path="/my-events" element={<MyEvents events={content.events} />} />
         <Route path="/about" element={<About />} />
+        <Route path="/impressum" element={<Impressum />} />
         <Route path="/calendar" element={<CalendarView events={content.events} />} />
         <Route path="/event/:type/:year/:slug" element={<DetailRoute />} />
       </Routes>
+      <SiteFooter />
       <ContributeLink />
+      </div>
     </HashRouter></AccountProvider>
   );
 }

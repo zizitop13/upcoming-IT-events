@@ -168,3 +168,18 @@ button:focus-visible, a:focus-visible { outline: 2px solid #245ccc; outline-offs
 .danger-button { color: #a11b16; border-color: #d7aaa7; }
 .danger-button:hover:not(:disabled) { background: #fff0ef; }
 .account-button-compact svg { display: none; }
+
+
+.site-layout { min-height: 100vh; display: flex; flex-direction: column; }
+.site-layout > main { flex: 1 0 auto; width: 100%; }
+.site-footer {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px;
+  max-width: 1500px; width: 100%; margin: 0 auto; padding: 20px 24px max(20px, env(safe-area-inset-bottom));
+  border-top: 1px solid #d9d7ce; color: #5f5e57; font-size: 14px;
+}
+.site-footer nav { display: flex; align-items: center; gap: 18px; }
+.site-footer a { text-underline-offset: 3px; }
+@media (max-width: 680px) {
+  .site-footer { padding: 18px 14px max(20px, env(safe-area-inset-bottom)); }
+  .site-footer nav { width: 100%; }
+}
