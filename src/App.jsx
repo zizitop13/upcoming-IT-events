@@ -76,8 +76,8 @@ function SiteHeader() {
         <Link className="brand" to={DEFAULT_ROUTE}><img className="brand-logo" src={`${import.meta.env.BASE_URL}calendar.svg`} width="32" height="32" alt="" />Upcoming IT Events</Link>
         </div>
         <div className="header-actions">
-        <button ref={toggleRef} className="nav-toggle" aria-expanded={open} aria-controls="site-navigation" onClick={() => setOpen(value => !value)}>{open ? 'Close' : 'Menu'}</button>
           {user && <NavLink className="my-events-shortcut" to="/my-events" aria-label="My events" title="My events"><svg width="32" height="32" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 14h40a4 4 0 0 1 4 4v8a6 6 0 0 0 0 12v8a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4v-8a6 6 0 0 0 0-12v-8a4 4 0 0 1 4-4Z"/><path d="m32 22 3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1Z" strokeWidth="3.5"/></svg><span>My events</span></NavLink>}
+        <button ref={toggleRef} className="nav-toggle" aria-expanded={open} aria-controls="site-navigation" onClick={() => setOpen(value => !value)}>{open ? 'Close' : 'Menu'}</button>
         </div>
         <nav id="site-navigation" aria-label="Main navigation" className={open ? 'is-open' : ''} onClick={event => { if (event.target.closest('a')) setOpen(false); }}>
           {NAV_ITEMS.map((item) => (

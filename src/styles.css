@@ -153,6 +153,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid #245ccc; outline-offs
   .header-actions .nav-toggle { margin-left: 0; }
   .my-events-shortcut { font-size: 14px; }
 }
-@media (max-width: 600px) {
-  .header-left { flex-basis: 100%; }
+
+@media (max-width: 900px) {
+  .my-events-shortcut span { display: none; }
+  .header-actions { flex-shrink: 0; }
 }
